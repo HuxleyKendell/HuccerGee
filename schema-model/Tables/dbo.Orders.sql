@@ -13,8 +13,7 @@ CREATE TABLE [dbo].[Orders]
 [ShipCity] [nvarchar] (15) NULL,
 [ShipRegion] [nvarchar] (15) NULL,
 [ShipPostalCode] [nvarchar] (10) NULL,
-[ShipCountry] [nvarchar] (15) NULL,
-[Test] [nvarchar] (15) NULL
+[ShipCountry] [nvarchar] (15) NULL
 )
 GO
 ALTER TABLE [dbo].[Orders] ADD CONSTRAINT [PK_Orders] PRIMARY KEY CLUSTERED ([OrderID])
