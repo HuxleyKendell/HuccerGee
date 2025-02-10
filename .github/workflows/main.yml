@@ -91,10 +91,35 @@ jobs:
         shell: pwsh
 
       - name: Commit and Push Changes
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        shell: pwsh
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
+
+          # Extract correct branch name from GitHub Actions variable
+          $branchRef = "${{ github.ref }}"
+          if ($branchRef -match "refs/heads/(.*)") {
+              $branchName = $matches[1]
+          } elseif ($branchRef -match "refs/pull/(.*)/merge") {
+              # If it's a PR build, use the PR source branch instead
+              $branchName = "${{ github.event.pull_request.head.ref }}"
+          } else {
+              Write-Host "Could not determine branch name. Exiting."
+              exit 1
+          }
+
+          Write-Host "Current Branch: $branchName"
+
+          git checkout $branchName
+
+          # Set remote with PAT for authentication
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
+
           git add .
-          git commit -m "Flyway Dev - Auto Generated Migration Scripts [skip ci]" || echo "No changes to commit"
-          git push origin HEAD
-        shell: pwsh
+          git commit -m "Flyway Dev - Auto Generated Migration Scripts [skip ci]" || Write-Host "No changes to commit"
+          git push origin $branchName
+
+
+
