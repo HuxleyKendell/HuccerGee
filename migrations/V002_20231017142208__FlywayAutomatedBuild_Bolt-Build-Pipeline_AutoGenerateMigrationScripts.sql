@@ -1,0 +1,12 @@
+﻿SET NUMERIC_ROUNDABORT OFF
+GO
+SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS, NOCOUNT ON
+GO
+SET DATEFORMAT YMD
+GO
+SET XACT_ABORT ON
+GO
+
+PRINT(N'Add 1 row to [dbo].[Region]')
+INSERT INTO [dbo].[Region] ([RegionID], [RegionDescription]) VALUES (5, N'North-East                                        ')
+
