@@ -98,10 +98,16 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
 
-          # Ensure we are on the correct branch
-          $branchName = git rev-parse --abbrev-ref HEAD
-          if ($branchName -eq "HEAD") {
-              $branchName = "${{ github.ref_name }}"
+          # Extract correct branch name from GitHub Actions variable
+          $branchRef = "${{ github.ref }}"
+          if ($branchRef -match "refs/heads/(.*)") {
+              $branchName = $matches[1]
+          } elseif ($branchRef -match "refs/pull/(.*)/merge") {
+              # If it's a PR build, use the PR source branch instead
+              $branchName = "${{ github.event.pull_request.head.ref }}"
+          } else {
+              Write-Host "Could not determine branch name. Exiting."
+              exit 1
           }
 
           Write-Host "Current Branch: $branchName"
@@ -114,5 +120,6 @@ jobs:
           git add .
           git commit -m "Flyway Dev - Auto Generated Migration Scripts [skip ci]" || Write-Host "No changes to commit"
           git push origin $branchName
+
 
 
