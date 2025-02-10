@@ -93,24 +93,26 @@ jobs:
       - name: Commit and Push Changes
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
+        shell: pwsh
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
 
           # Ensure we are on the correct branch
-          branch_name=$(git rev-parse --abbrev-ref HEAD)
-          if [ "$branch_name" == "HEAD" ]; then
-            branch_name=${{ github.ref_name }}
-          fi
+          $branchName = git rev-parse --abbrev-ref HEAD
+          if ($branchName -eq "HEAD") {
+              $branchName = "${{ github.ref_name }}"
+          }
 
-          echo "Current Branch: $branch_name"
+          Write-Host "Current Branch: $branchName"
 
-          git checkout $branch_name
+          git checkout $branchName
 
+          # Set remote with PAT for authentication
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
 
           git add .
-          git commit -m "Flyway Dev - Auto Generated Migration Scripts [skip ci]" || echo "No changes to commit"
-          git push origin $branch_name
-        shell: bash
+          git commit -m "Flyway Dev - Auto Generated Migration Scripts [skip ci]" || Write-Host "No changes to commit"
+          git push origin $branchName
+
 
